@@ -6,11 +6,13 @@ import {
   SafeAreaView,
   Image,
   TextInput,
+  Platform,
 } from "react-native";
 import React, { useState } from "react";
 
 import IonIcon from "react-native-vector-icons/Ionicons";
 import AntIcon from "react-native-vector-icons/AntDesign";
+import ComIcon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -56,26 +58,49 @@ function HomeScreen({ navigation }) {
 
 function AddScreen({ navigation }) {
   const [text, setText] = useState("");
+
+  const formatUserName = (textValue) => {
+    setText({ userName: textValue.toUpperCase() });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      <View
+        style={[
+          styles.container,
+          {
+            flexDirection: "row",
+          },
+        ]}
+      >
+        <ComIcon
+          style={styles.inputIcon}
+          name="card-bulleted-outline"
+          size={20}
+        />
+        <TextInput
+          style={styles.plateInput}
+          placeholderTextColor="#FFFF"
+          keyboardType={Platform.OS === "ios" ? "default" : "visible-password"}
+          placeholder="123 456"
+          onChangeText={(newText) => formatUserName(newText)}
+          defaultValue={text}
+        />
+      </View>
+
       <Text
         style={{
           color: "#94D1BE",
-          fontSize: 30,
+          fontSize: 20,
           position: "absolute",
-          top: 80,
-          fontWeight: "bold",
+          top: 290,
+          // fontWeight: "bold",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         Car Information
       </Text>
-      <TextInput
-        style={styles.plateInput}
-        placeholderTextColor="#FFFF"
-        placeholder="123 456"
-        onChangeText={(newText) => setText(newText.toUpperCase())}
-        defaultValue={text}
-      />
 
       <AntIcon
         style={styles.backArrow}
@@ -123,9 +148,15 @@ const styles = StyleSheet.create({
   plateInput: {
     height: 40,
     textAlign: "center",
-    // outlineStyle: "none",
+    borderColor: "white",
+    borderWidth: 1,
     color: "#94D1BE",
-    position: "absolute",
-    top: 150,
+    borderRadius: 5,
+    // position: "absolute",
+    // top: 150,
+  },
+  inputIcon: {
+    color: "#94D1BE",
+    padding: 10,
   },
 });
