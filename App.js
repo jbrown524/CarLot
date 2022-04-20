@@ -4,9 +4,10 @@ import {
   Text,
   View,
   SafeAreaView,
-  Image,
   TextInput,
   Platform,
+  // Picker,
+  Pressable,
 } from "react-native";
 import React, { useState } from "react";
 
@@ -16,6 +17,7 @@ import ComIcon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Picker } from "@react-native-picker/picker";
 
 const Stack = createNativeStackNavigator();
 
@@ -58,6 +60,7 @@ function HomeScreen({ navigation }) {
 
 function AddScreen({ navigation }) {
   const [text, setText] = useState("");
+  const [selectedValue, setSelectedValue] = useState("java");
 
   const formatUserName = (textValue) => {
     setText({ userName: textValue.toUpperCase() });
@@ -88,19 +91,80 @@ function AddScreen({ navigation }) {
         />
       </View>
 
+      <View
+        style={[
+          styles.container,
+          {
+            flexDirection: "row",
+            position: "absolute",
+            bottom: 270,
+          },
+        ]}
+      >
+        <ComIcon style={styles.inputIcon} name="school-outline" size={20} />
+        <Picker
+          selectedValue={selectedValue}
+          style={{
+            height: 30,
+            width: 160,
+            backgroundColor: "transparent",
+            borderColor: "white",
+            borderWidth: 1,
+            borderRadius: 3,
+            color: "white",
+          }}
+          onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+        >
+          <Picker.Item label="STA" color="#94D1BE" value="sta" />
+          <Picker.Item label="UCM" color="#e06a71" value="ucm" />
+          <Picker.Item label="STAFF" color="#7ac1e1" value="staff" />
+        </Picker>
+      </View>
+
       <Text
         style={{
           color: "#94D1BE",
           fontSize: 20,
           position: "absolute",
-          top: 290,
-          // fontWeight: "bold",
+          paddingBottom: 100,
+          paddingLeft: 20,
+          fontWeight: "bold",
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        Car Information
+        <Text style={{ color: "white" }}>NEW</Text> CAR
       </Text>
+
+      <Pressable
+        style={{
+          position: "absolute",
+          bottom: 50,
+          borderRadius: 10,
+          backgroundColor: "#49D6AA",
+          padding: 10,
+          paddingLeft: 20,
+          paddingRight: 20,
+          marginLeft: 20,
+        }}
+        onPress={() => navigation.navigate("Home")}
+      >
+        <Text style={{ color: "white", fontWeight: "bold", fontSize: 15 }}>
+          Done
+        </Text>
+      </Pressable>
+
+      {/* <Button
+        title="Done"
+        color="#58DEB4"
+        style={{
+          position: "absolute",
+          bottom: 500,
+          zIndex: 99,
+          borderRadius: 10,
+        }}
+        onPress={)}
+      /> */}
 
       <AntIcon
         style={styles.backArrow}
@@ -158,5 +222,9 @@ const styles = StyleSheet.create({
   inputIcon: {
     color: "#94D1BE",
     padding: 10,
+  },
+  schoolIcon: {
+    color: "#94D1BE",
+    padding: 15,
   },
 });
