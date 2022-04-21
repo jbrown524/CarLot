@@ -8,6 +8,7 @@ import {
   Platform,
   // Picker,
   Pressable,
+  KeyboardAvoidingView,
 } from "react-native";
 import React, { useState } from "react";
 
@@ -35,6 +36,11 @@ export default function App() {
           component={AddScreen}
           options={{ headerShown: false }}
         />
+        {/* <Stack.Screen
+          name="Add"
+          component={Warning1Screen}
+          options={{ headerShown: false }}
+        /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -67,12 +73,20 @@ function AddScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      enabled={false}
+    >
       <View
         style={[
           styles.container,
           {
             flexDirection: "row",
+            // flexWrap: "wrap",
+            // height: 30,
+            // width: 230,
+            paddingRight: 30,
           },
         ]}
       >
@@ -88,6 +102,7 @@ function AddScreen({ navigation }) {
           placeholder="123 456"
           onChangeText={(newText) => formatUserName(newText)}
           defaultValue={text}
+          maxLength={7}
         />
       </View>
 
@@ -97,37 +112,54 @@ function AddScreen({ navigation }) {
           {
             flexDirection: "row",
             position: "absolute",
-            bottom: 270,
+            bottom: 290,
+            paddingRight: 30,
+            height: 50,
           },
         ]}
       >
         <ComIcon style={styles.inputIcon} name="school-outline" size={20} />
-        <Picker
-          selectedValue={selectedValue}
+        <View
           style={{
             height: 30,
-            width: 160,
-            backgroundColor: "transparent",
+            marginTop: -10,
+            width: 170,
             borderColor: "white",
             borderWidth: 1,
             borderRadius: 3,
-            color: "white",
           }}
-          onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
         >
-          <Picker.Item label="STA" color="#94D1BE" value="sta" />
-          <Picker.Item label="UCM" color="#e06a71" value="ucm" />
-          <Picker.Item label="STAFF" color="#7ac1e1" value="staff" />
-        </Picker>
+          <Picker
+            selectedValue={selectedValue}
+            style={{
+              height: 30,
+              width: 160,
+              marginTop: -13,
+              // paddingBottom: 50,
+              backgroundColor: "transparent",
+              // borderColor: "white",
+              // borderWidth: 1,
+              // borderRadius: 3,
+              color: "white",
+            }}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedValue(itemValue)
+            }
+          >
+            <Picker.Item label="STA" color="#94D1BE" value="sta" />
+            <Picker.Item label="UCM" color="#e06a71" value="ucm" />
+            <Picker.Item label="STAFF" color="#7ac1e1" value="staff" />
+          </Picker>
+        </View>
       </View>
 
       <Text
         style={{
           color: "#94D1BE",
-          fontSize: 20,
+          fontSize: 25,
           position: "absolute",
-          paddingBottom: 100,
-          paddingLeft: 20,
+          paddingBottom: 150,
+          // paddingLeft: 20,
           fontWeight: "bold",
           alignItems: "center",
           justifyContent: "center",
@@ -143,9 +175,10 @@ function AddScreen({ navigation }) {
           borderRadius: 10,
           backgroundColor: "#49D6AA",
           padding: 10,
-          paddingLeft: 20,
-          paddingRight: 20,
-          marginLeft: 20,
+          paddingLeft: 40,
+          paddingRight: 40,
+          // marginLeft: 40,
+          // marginRight
         }}
         onPress={() => navigation.navigate("Home")}
       >
@@ -154,25 +187,13 @@ function AddScreen({ navigation }) {
         </Text>
       </Pressable>
 
-      {/* <Button
-        title="Done"
-        color="#58DEB4"
-        style={{
-          position: "absolute",
-          bottom: 500,
-          zIndex: 99,
-          borderRadius: 10,
-        }}
-        onPress={)}
-      /> */}
-
       <AntIcon
         style={styles.backArrow}
         onPress={() => navigation.navigate("Home")}
         name="arrowleft"
         size={20}
       />
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -182,6 +203,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#3B413C",
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "column",
   },
   carText: {
     opacity: 0.5,
@@ -216,6 +238,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     color: "#94D1BE",
     borderRadius: 5,
+    paddingLeft: 60,
+    paddingRight: 60,
     // position: "absolute",
     // top: 150,
   },
@@ -227,4 +251,30 @@ const styles = StyleSheet.create({
     color: "#94D1BE",
     padding: 15,
   },
+
+  warningOne: {
+    flex: 1,
+    backgroundColor: "#ccecf4",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+  },
 });
+
+function Warning1Screen({ navigation }) {
+  return (
+    <SafeAreaView style={styles.warningOne}>
+      <IonIcon name="car" size={50} style={styles.carImage} />
+      <Text style={styles.carText}>Empty lot</Text>
+      <AntIcon
+        style={styles.circleIcon}
+        onPress={() => {
+          navigation.navigate("Add");
+        }}
+        name="pluscircleo"
+        size={25}
+      />
+      <StatusBar style="auto" />
+    </SafeAreaView>
+  );
+}
