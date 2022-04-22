@@ -1,3 +1,9 @@
+/**
+ * CARLOT 2022
+ * Program designed to increase the ease of tracking cars at STA
+ */
+
+// React
 import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
@@ -6,21 +12,58 @@ import {
   SafeAreaView,
   TextInput,
   Platform,
-  // Picker,
   Pressable,
   KeyboardAvoidingView,
 } from "react-native";
 import React, { useState } from "react";
-
+// Icons
 import IonIcon from "react-native-vector-icons/Ionicons";
 import AntIcon from "react-native-vector-icons/AntDesign";
 import ComIcon from "react-native-vector-icons/MaterialCommunityIcons";
-
+// Navigation
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+// Picker
 import { Picker } from "@react-native-picker/picker";
 
+// student warnings
+import Warning1Screen from "./pages/warnings/student/WarningOne";
+import Warning2Screen from "./pages/warnings/student/WarningTwo";
+import Warning3Screen from "./pages/warnings/student/WarningThree";
+// staff warnings
+import StaffWarning1Screen from "./pages/warnings/staff/StaffWarningOne";
+import StaffWarning2Screen from "./pages/warnings/staff/StaffWarningTwo";
+import StaffWarning3Screen from "./pages/warnings/staff/StaffWarningThree";
+
 const Stack = createNativeStackNavigator();
+
+let cars = [
+  { plate: "123 456", school: "UCM" },
+  { plate: "456 890", school: "STA" },
+];
+
+const CarEntry = ({ cars }) => {
+  return (
+    <View
+      style={{
+        flexDirection: "column",
+        position: "absolute",
+        top: 100,
+      }}
+    >
+      {cars.map((car) => {
+        return (
+          <Pressable>
+            <Text style={{ color: "white" }}>
+              {" "}
+              {car.plate} || {car.school}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+};
 
 export default function App() {
   return (
@@ -36,11 +79,36 @@ export default function App() {
           component={AddScreen}
           options={{ headerShown: false }}
         />
-        {/* <Stack.Screen
-          name="Add"
+        <Stack.Screen
+          name="w1"
           component={Warning1Screen}
           options={{ headerShown: false }}
-        /> */}
+        />
+        <Stack.Screen
+          name="w2"
+          component={Warning2Screen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="w3"
+          component={Warning3Screen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="sw1"
+          component={StaffWarning1Screen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="sw2"
+          component={StaffWarning2Screen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="sw3"
+          component={StaffWarning3Screen}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -50,6 +118,7 @@ function HomeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <IonIcon name="car" size={50} style={styles.carImage} />
+      <CarEntry cars={cars} />
       <Text style={styles.carText}>Empty lot</Text>
       <AntIcon
         style={styles.circleIcon}
@@ -180,7 +249,7 @@ function AddScreen({ navigation }) {
           // marginLeft: 40,
           // marginRight
         }}
-        onPress={() => navigation.navigate("Home")}
+        onPress={() => navigation.navigate("w3")}
       >
         <Text style={{ color: "white", fontWeight: "bold", fontSize: 15 }}>
           Done
@@ -251,30 +320,4 @@ const styles = StyleSheet.create({
     color: "#94D1BE",
     padding: 15,
   },
-
-  warningOne: {
-    flex: 1,
-    backgroundColor: "#ccecf4",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
-  },
 });
-
-function Warning1Screen({ navigation }) {
-  return (
-    <SafeAreaView style={styles.warningOne}>
-      <IonIcon name="car" size={50} style={styles.carImage} />
-      <Text style={styles.carText}>Empty lot</Text>
-      <AntIcon
-        style={styles.circleIcon}
-        onPress={() => {
-          navigation.navigate("Add");
-        }}
-        name="pluscircleo"
-        size={25}
-      />
-      <StatusBar style="auto" />
-    </SafeAreaView>
-  );
-}
