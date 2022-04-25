@@ -34,12 +34,14 @@ import Warning3Screen from "./pages/warnings/student/WarningThree";
 import StaffWarning1Screen from "./pages/warnings/staff/StaffWarningOne";
 import StaffWarning2Screen from "./pages/warnings/staff/StaffWarningTwo";
 import StaffWarning3Screen from "./pages/warnings/staff/StaffWarningThree";
+//force
+import useForceUpdate from "use-force-update";
 
 const Stack = createNativeStackNavigator();
 
 let cars = [
-  { plate: "123 456", school: "UCM" },
-  { plate: "456 890", school: "STA" },
+  // { plate: "123 456", school: "UCM" },
+  // { plate: "456 890", school: "STA" },
 ];
 
 const CarEntry = ({ cars }) => {
@@ -48,21 +50,61 @@ const CarEntry = ({ cars }) => {
       style={{
         flexDirection: "column",
         position: "absolute",
-        top: 100,
+        // borderWidth: 1,
+        // borderColor: "white",
+        // borderRadius: 20,
+        // width: 350,
+        // height: 700,
+        // paddingTop: 20,
+        width: "100%",
+        alignItems: "center",
+        top: 85,
       }}
     >
       {cars.map((car) => {
         return (
-          <Pressable>
-            <Text style={{ color: "white" }}>
+          <Pressable
+            style={{
+              backgroundColor: "black",
+              padding: 10,
+              marginBottom: 15,
+              borderWidth: 1,
+              borderColor: "#94D1BE",
+              width: "100%",
+            }}
+            onPress={() => {
+              alert(car.plate);
+            }}
+          >
+            <Text style={{ color: "white", fontSize: 12 }}>
               {" "}
-              {car.plate} || {car.school}
+              <Text style={{ fontWeight: "bold" }}>PLATE:</Text> {car.plate} ||
+              || <Text style={{ fontWeight: "bold" }}>SCHOOL:</Text>
+              {car.school}
             </Text>
           </Pressable>
         );
       })}
     </View>
   );
+};
+
+const CarShow = ({ cars }) => {
+  const forceUpdate = useForceUpdate();
+  forceUpdate();
+  if (cars.length <= 0) {
+    return (
+      <View styles={styles.container}>
+        <CarEntry cars={cars} />
+
+        <IonIcon name="car" size={50} style={styles.carImage} />
+
+        <Text style={styles.carText}>Empty lot</Text>
+      </View>
+    );
+  } else {
+    return <IonIcon style={{ position: "absolute", left: 50000 }}></IonIcon>;
+  }
 };
 
 export default function App() {
@@ -115,11 +157,12 @@ export default function App() {
 }
 
 function HomeScreen({ navigation }) {
+  // this.forceUpdate();
+  useForceUpdate();
   return (
-    <SafeAreaView style={styles.container}>
-      <IonIcon name="car" size={50} style={styles.carImage} />
+    <SafeAreaView style={styles.container} on>
       <CarEntry cars={cars} />
-      <Text style={styles.carText}>Empty lot</Text>
+      <CarShow cars={cars} />
       <AntIcon
         style={styles.circleIcon}
         onPress={() => {
@@ -133,9 +176,20 @@ function HomeScreen({ navigation }) {
   );
 }
 
+function handleInput(text, selected, navigation) {
+  console.log(text.userName);
+  console.log(text.userName.length);
+
+  if (text.userName.length <= 7 && text.userName.length > 0) {
+    cars.push({ plate: text.userName.length, school: selected });
+    navigation.navigate("w1");
+  }
+  console.log(cars);
+}
+
 function AddScreen({ navigation }) {
   const [text, setText] = useState("");
-  const [selectedValue, setSelectedValue] = useState("java");
+  const [selectedValue, setSelectedValue] = useState("STA");
 
   const formatUserName = (textValue) => {
     setText({ userName: textValue.toUpperCase() });
@@ -249,7 +303,7 @@ function AddScreen({ navigation }) {
           // marginLeft: 40,
           // marginRight
         }}
-        onPress={() => navigation.navigate("w3")}
+        onPress={() => handleInput(text, selectedValue, navigation)}
       >
         <Text style={{ color: "white", fontWeight: "bold", fontSize: 15 }}>
           Done

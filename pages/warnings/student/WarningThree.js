@@ -53,8 +53,7 @@ export default function Warning3Screen({ navigation }) {
         Issue the <Text style={{ color: "white" }}>STA/UCM</Text> student their{" "}
         <Text style={{ color: "white" }}>FINAL</Text> warning slip. Student has
         parked in the <Text style={{ color: "white" }}>incorrect spot.</Text>{" "}
-        Upon further transgressions{" "}
-        <Text style={{ color: "white" }}>action</Text> against the{" "}
+        Upon further transgressions action against the{" "}
         <Text style={{ color: "white" }}>car or student</Text> may be required.
       </Text>
       <Pressable
