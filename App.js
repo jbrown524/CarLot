@@ -158,9 +158,9 @@ export default function App() {
 
 function HomeScreen({ navigation }) {
   // this.forceUpdate();
-  useForceUpdate();
+
   return (
-    <SafeAreaView style={styles.container} on>
+    <SafeAreaView style={styles.container}>
       <CarEntry cars={cars} />
       <CarShow cars={cars} />
       <AntIcon
