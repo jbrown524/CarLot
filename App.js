@@ -36,13 +36,14 @@ import StaffWarning2Screen from "./pages/warnings/staff/StaffWarningTwo";
 import StaffWarning3Screen from "./pages/warnings/staff/StaffWarningThree";
 //force
 import useForceUpdate from "use-force-update";
-
+import { createStore } from "state-pool";
 const Stack = createNativeStackNavigator();
 
-let cars = [
-  // { plate: "123 456", school: "UCM" },
-  // { plate: "456 890", school: "STA" },
-];
+const store = createStore();
+store.setState("GCar", []);
+// TODO
+// If click on added car, add a conditional editing look to add page as well as change appending logic to home screen
+store.setState("Editing", [false, ""]);
 
 const CarEntry = ({ cars }) => {
   return (
@@ -79,7 +80,7 @@ const CarEntry = ({ cars }) => {
             <Text style={{ color: "white", fontSize: 12 }}>
               {" "}
               <Text style={{ fontWeight: "bold" }}>PLATE:</Text> {car.plate} ||
-              || <Text style={{ fontWeight: "bold" }}>SCHOOL:</Text>
+              || <Text style={{ fontWeight: "bold" }}>SCHOOL: </Text>
               {car.school}
             </Text>
           </Pressable>
@@ -90,8 +91,8 @@ const CarEntry = ({ cars }) => {
 };
 
 const CarShow = ({ cars }) => {
-  const forceUpdate = useForceUpdate();
-  forceUpdate();
+  // const forceUpdate = useForceUpdate();
+  // forceUpdate();
   if (cars.length <= 0) {
     return (
       <View styles={styles.container}>
@@ -158,6 +159,7 @@ export default function App() {
 
 function HomeScreen({ navigation }) {
   // this.forceUpdate();
+  const [cars, setCars] = store.useState("GCar");
 
   return (
     <SafeAreaView style={styles.container}>
@@ -166,6 +168,12 @@ function HomeScreen({ navigation }) {
       <AntIcon
         style={styles.circleIcon}
         onPress={() => {
+          // const updatedCarsArray = [
+          //   ...cars,
+          //   { plate: "567123", school: "UCM" },
+          // ];
+          // // cars.push({ plate: text.userName.length, school: selected });
+          // setCars(updatedCarsArray);
           navigation.navigate("Add");
         }}
         name="pluscircleo"
@@ -176,20 +184,11 @@ function HomeScreen({ navigation }) {
   );
 }
 
-function handleInput(text, selected, navigation) {
-  console.log(text.userName);
-  console.log(text.userName.length);
-
-  if (text.userName.length <= 7 && text.userName.length > 0) {
-    cars.push({ plate: text.userName.length, school: selected });
-    navigation.navigate("w1");
-  }
-  console.log(cars);
-}
-
 function AddScreen({ navigation }) {
   const [text, setText] = useState("");
   const [selectedValue, setSelectedValue] = useState("STA");
+
+  const [cars, setCars] = store.useState("GCar");
 
   const formatUserName = (textValue) => {
     setText({ userName: textValue.toUpperCase() });
@@ -206,9 +205,6 @@ function AddScreen({ navigation }) {
           styles.container,
           {
             flexDirection: "row",
-            // flexWrap: "wrap",
-            // height: 30,
-            // width: 230,
             paddingRight: 30,
           },
         ]}
@@ -258,11 +254,7 @@ function AddScreen({ navigation }) {
               height: 30,
               width: 160,
               marginTop: -13,
-              // paddingBottom: 50,
               backgroundColor: "transparent",
-              // borderColor: "white",
-              // borderWidth: 1,
-              // borderRadius: 3,
               color: "white",
             }}
             onValueChange={(itemValue, itemIndex) =>
@@ -300,10 +292,30 @@ function AddScreen({ navigation }) {
           padding: 10,
           paddingLeft: 40,
           paddingRight: 40,
-          // marginLeft: 40,
-          // marginRight
         }}
-        onPress={() => handleInput(text, selectedValue, navigation)}
+        onPress={() => {
+          console.log(text.userName);
+          if (
+            typeof text.userName === "undefined" ||
+            text.userName.includes("!@#$%^&*()-_+={[}]\\|;:'\"<,>.?/")
+          ) {
+            alert("Invalid plate number...");
+            return;
+          }
+
+          if (text.userName.length <= 7 && text.userName.length > 0) {
+            const updatedCarsArray = [
+              ...cars,
+              {
+                plate: text.userName.toUpperCase(),
+                school: selectedValue.toUpperCase(),
+              },
+            ];
+            setCars(updatedCarsArray);
+            navigation.navigate("w1");
+          }
+          console.log(cars);
+        }}
       >
         <Text style={{ color: "white", fontWeight: "bold", fontSize: 15 }}>
           Done
