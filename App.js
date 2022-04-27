@@ -43,23 +43,21 @@ const store = createStore();
 store.setState("GCar", []);
 // TODO
 // If click on added car, add a conditional editing look to add page as well as change appending logic to home screen
-store.setState("Editing", [false, ""]);
+store.setState("Editing", { isEditing: false, plate: "" });
 
-const CarEntry = ({ cars }) => {
+const CarEntry = ({ cars, navigation }) => {
+  const [editing, setEditing] = store.useState("Editing");
   return (
     <View
       style={{
-        flexDirection: "column",
-        position: "absolute",
-        // borderWidth: 1,
-        // borderColor: "white",
-        // borderRadius: 20,
-        // width: 350,
-        // height: 700,
-        // paddingTop: 20,
+        // flexDirection: "column",
+
         width: "100%",
-        alignItems: "center",
-        top: 85,
+        // overflow: "scroll",
+        // height: 100,
+
+        // alignItems: "center",
+        top: 55,
       }}
     >
       {cars.map((car) => {
@@ -74,7 +72,9 @@ const CarEntry = ({ cars }) => {
               width: "100%",
             }}
             onPress={() => {
-              alert(car.plate);
+              // alert(car.plate);
+              setEditing({ isEditing: true, plate: car.plate });
+              navigation.navigate("Add");
             }}
           >
             <Text style={{ color: "white", fontSize: 12 }}>
@@ -96,11 +96,31 @@ const CarShow = ({ cars }) => {
   if (cars.length <= 0) {
     return (
       <View styles={styles.container}>
-        <CarEntry cars={cars} />
+        {/* <CarEntry cars={cars} /> */}
 
         <IonIcon name="car" size={50} style={styles.carImage} />
 
         <Text style={styles.carText}>Empty lot</Text>
+      </View>
+    );
+  } else {
+    return <IonIcon style={{ position: "absolute", left: 50000 }}></IonIcon>;
+  }
+};
+
+const EditingShow = ({ editing }) => {
+  if (editing.isEditing) {
+    return (
+      <View
+        style={{
+          position: "absolute",
+          top: 100,
+          fontSize: 12,
+        }}
+      >
+        <Text style={{ color: "#ff6666" }}>
+          <Text style={{ fontWeight: "bold" }}> EDITING:</Text> {editing.plate}
+        </Text>
       </View>
     );
   } else {
@@ -163,7 +183,28 @@ function HomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <CarEntry cars={cars} />
+      <View
+        style={{
+          flexDirection: "column",
+          position: "absolute",
+          // borderWidth: 1,
+          // borderColor: "white",
+          // borderRadius: 20,
+          // width: 350,
+          // height: 700,
+          // paddingTop: 20,
+          width: "100%",
+          alignItems: "center",
+          overflow: "hidden",
+          height: "92%",
+          // maxHeight: 100,
+
+          top: 0,
+        }}
+      >
+        <CarEntry cars={cars} navigation={navigation} />
+      </View>
+
       <CarShow cars={cars} />
       <AntIcon
         style={styles.circleIcon}
@@ -189,6 +230,7 @@ function AddScreen({ navigation }) {
   const [selectedValue, setSelectedValue] = useState("STA");
 
   const [cars, setCars] = store.useState("GCar");
+  const [editing, setEditing] = store.useState("Editing");
 
   const formatUserName = (textValue) => {
     setText({ userName: textValue.toUpperCase() });
@@ -220,7 +262,7 @@ function AddScreen({ navigation }) {
           keyboardType={Platform.OS === "ios" ? "default" : "visible-password"}
           placeholder="123 456"
           onChangeText={(newText) => formatUserName(newText)}
-          defaultValue={text}
+          defaultValue={text.userName}
           maxLength={7}
         />
       </View>
@@ -267,7 +309,7 @@ function AddScreen({ navigation }) {
           </Picker>
         </View>
       </View>
-
+      <EditingShow editing={editing} />
       <Text
         style={{
           color: "#94D1BE",
@@ -295,23 +337,44 @@ function AddScreen({ navigation }) {
         }}
         onPress={() => {
           console.log(text.userName);
-          if (
-            typeof text.userName === "undefined" ||
-            text.userName.includes("!@#$%^&*()-_+={[}]\\|;:'\"<,>.?/")
-          ) {
+          const specialChars = `/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;`;
+
+          const isSpecialCharsPresent = specialChars
+            .split("")
+            .some((char) => text.userName.includes(char));
+
+          if (typeof text.userName === "undefined" || isSpecialCharsPresent) {
             alert("Invalid plate number...");
             return;
           }
 
           if (text.userName.length <= 7 && text.userName.length > 0) {
-            const updatedCarsArray = [
-              ...cars,
-              {
-                plate: text.userName.toUpperCase(),
-                school: selectedValue.toUpperCase(),
-              },
-            ];
+            const updatedCarsArray =
+              cars.length >= 13
+                ? [
+                    {
+                      plate: text.userName.toUpperCase(),
+                      school: selectedValue.toUpperCase(),
+                    },
+                  ]
+                : [
+                    ...cars,
+                    {
+                      plate: text.userName.toUpperCase(),
+                      school: selectedValue.toUpperCase(),
+                    },
+                  ];
+
             setCars(updatedCarsArray);
+
+            if (editing.isEditing) {
+              for (car of cars) {
+                if (car.plate === editing.plate) {
+                }
+              }
+              setEditing({ isEditing: false, plate: "" });
+            }
+
             navigation.navigate("w1");
           }
           console.log(cars);
