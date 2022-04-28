@@ -336,20 +336,25 @@ function AddScreen({ navigation }) {
           paddingRight: 40,
         }}
         onPress={() => {
-          console.log(text.userName);
+          // console.log(text.userName);
+          if(typeof text.userName === 'undefined') {
+            alert("Please input a plate number...");
+            return;
+          }
+
           const specialChars = `/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;`;
 
           const isSpecialCharsPresent = specialChars
             .split("")
             .some((char) => text.userName.includes(char));
 
-          if (typeof text.userName === "undefined" || isSpecialCharsPresent) {
+          if (isSpecialCharsPresent) {
             alert("Invalid plate number...");
             return;
           }
 
           if (text.userName.length <= 7 && text.userName.length > 0) {
-            const updatedCarsArray =
+            let updatedCarsArray =
               cars.length >= 13
                 ? [
                     {
@@ -365,19 +370,36 @@ function AddScreen({ navigation }) {
                     },
                   ];
 
-            setCars(updatedCarsArray);
+            // setCars(updatedCarsArray);
 
             if (editing.isEditing) {
-              for (car of cars) {
-                if (car.plate === editing.plate) {
+              updatedCarsArray = [];
+              
+
+              for(let car in cars) {
+                let iterCar = cars[car];
+                if(iterCar.plate === editing.plate) {
+                  console.log("test: " + iterCar.plate)
+                  updatedCarsArray.push({
+                    plate: text.userName.toUpperCase(),
+                    school: selectedValue.toUpperCase()
+                  })
+                  // iterCar.plate = text.userName.toUpperCase();
+                  // iterCar.school = selectedValue.toUpperCase();
+                  
+                } else {
+                  updatedCarsArray.push(iterCar);
                 }
               }
+
               setEditing({ isEditing: false, plate: "" });
+
             }
 
+            setCars(updatedCarsArray);
             navigation.navigate("w1");
           }
-          console.log(cars);
+          // console.log(cars);
         }}
       >
         <Text style={{ color: "white", fontWeight: "bold", fontSize: 15 }}>
@@ -387,7 +409,11 @@ function AddScreen({ navigation }) {
 
       <AntIcon
         style={styles.backArrow}
-        onPress={() => navigation.navigate("Home")}
+        onPress={() =>{
+          if(editing.isEditing) setEditing({isEditing: false, plate: ""});
+          navigation.navigate("Home");
+          
+        } }
         name="arrowleft"
         size={20}
       />
