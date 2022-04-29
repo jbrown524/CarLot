@@ -6,8 +6,9 @@ require("./Car");
 
 const Car = mongoose.model("car");
 app.use(bodyParser.json());
+//fix db name
 const mongoURI =
-  "mongodb+srv://carlotclust:wRNniBNuWwnEkzkm@cluster0.es6bc.mongodb.net/Project0?retryWrites=true&w=majority";
+  "mongodb+srv://carlotclust:z0g1LkoBFvRBCdHJ@cluster0.es6bc.mongodb.net/Cluster0?retryWrites=true&w=majority";
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,

@@ -1,6 +1,7 @@
 /**
  * CARLOT 2022
  * Program designed to increase the ease of tracking cars at STA
+ * TODO configure heroku server backend | https://www.youtube.com/watch?v=OGRR79IIW7g
  */
 
 // React
@@ -14,8 +15,10 @@ import {
   Platform,
   Pressable,
   KeyboardAvoidingView,
+  // CheckBox,
 } from "react-native";
 import React, { useState } from "react";
+import Checkbox from "expo-checkbox";
 // Icons
 import IonIcon from "react-native-vector-icons/Ionicons";
 import AntIcon from "react-native-vector-icons/AntDesign";
@@ -34,15 +37,15 @@ import Warning3Screen from "./pages/warnings/student/WarningThree";
 import StaffWarning1Screen from "./pages/warnings/staff/StaffWarningOne";
 import StaffWarning2Screen from "./pages/warnings/staff/StaffWarningTwo";
 import StaffWarning3Screen from "./pages/warnings/staff/StaffWarningThree";
-//force
-import useForceUpdate from "use-force-update";
+
 import { createStore } from "state-pool";
+
+import axios from "axios";
+
 const Stack = createNativeStackNavigator();
 
 const store = createStore();
 store.setState("GCar", []);
-// TODO
-// If click on added car, add a conditional editing look to add page as well as change appending logic to home screen
 store.setState("Editing", { isEditing: false, plate: "" });
 
 const CarEntry = ({ cars, navigation }) => {
@@ -91,13 +94,9 @@ const CarEntry = ({ cars, navigation }) => {
 };
 
 const CarShow = ({ cars }) => {
-  // const forceUpdate = useForceUpdate();
-  // forceUpdate();
   if (cars.length <= 0) {
     return (
       <View styles={styles.container}>
-        {/* <CarEntry cars={cars} /> */}
-
         <IonIcon name="car" size={50} style={styles.carImage} />
 
         <Text style={styles.carText}>Empty lot</Text>
@@ -178,7 +177,6 @@ export default function App() {
 }
 
 function HomeScreen({ navigation }) {
-  // this.forceUpdate();
   const [cars, setCars] = store.useState("GCar");
 
   return (
@@ -187,18 +185,10 @@ function HomeScreen({ navigation }) {
         style={{
           flexDirection: "column",
           position: "absolute",
-          // borderWidth: 1,
-          // borderColor: "white",
-          // borderRadius: 20,
-          // width: 350,
-          // height: 700,
-          // paddingTop: 20,
           width: "100%",
           alignItems: "center",
           overflow: "hidden",
           height: "92%",
-          // maxHeight: 100,
-
           top: 0,
         }}
       >
@@ -209,12 +199,6 @@ function HomeScreen({ navigation }) {
       <AntIcon
         style={styles.circleIcon}
         onPress={() => {
-          // const updatedCarsArray = [
-          //   ...cars,
-          //   { plate: "567123", school: "UCM" },
-          // ];
-          // // cars.push({ plate: text.userName.length, school: selected });
-          // setCars(updatedCarsArray);
           navigation.navigate("Add");
         }}
         name="pluscircleo"
@@ -231,6 +215,8 @@ function AddScreen({ navigation }) {
 
   const [cars, setCars] = store.useState("GCar");
   const [editing, setEditing] = store.useState("Editing");
+
+  const [isSelected, setSelection] = useState(false);
 
   const formatUserName = (textValue) => {
     setText({ userName: textValue.toUpperCase() });
@@ -273,7 +259,7 @@ function AddScreen({ navigation }) {
           {
             flexDirection: "row",
             position: "absolute",
-            bottom: 290,
+            bottom: 300,
             paddingRight: 30,
             height: 50,
           },
@@ -309,6 +295,25 @@ function AddScreen({ navigation }) {
           </Picker>
         </View>
       </View>
+      <View
+        style={[
+          styles.checkboxContainer,
+          {
+            flexDirection: "row",
+            position: "absolute",
+            bottom: 220,
+            paddingRight: 10,
+            height: 50,
+          },
+        ]}
+      >
+        <Text style={styles.label}>Misplaced permit?</Text>
+        <Checkbox
+          value={isSelected}
+          onValueChange={setSelection}
+          style={styles.checkbox}
+        />
+      </View>
       <EditingShow editing={editing} />
       <Text
         style={{
@@ -337,7 +342,7 @@ function AddScreen({ navigation }) {
         }}
         onPress={() => {
           // console.log(text.userName);
-          if(typeof text.userName === 'undefined') {
+          if (typeof text.userName === "undefined") {
             alert("Please input a plate number...");
             return;
           }
@@ -374,30 +379,34 @@ function AddScreen({ navigation }) {
 
             if (editing.isEditing) {
               updatedCarsArray = [];
-              
 
-              for(let car in cars) {
+              for (let car in cars) {
                 let iterCar = cars[car];
-                if(iterCar.plate === editing.plate) {
-                  console.log("test: " + iterCar.plate)
+                if (iterCar.plate === editing.plate) {
+                  // console.log("test: " + iterCar.plate);
                   updatedCarsArray.push({
                     plate: text.userName.toUpperCase(),
-                    school: selectedValue.toUpperCase()
-                  })
+                    school: selectedValue.toUpperCase(),
+                  });
                   // iterCar.plate = text.userName.toUpperCase();
                   // iterCar.school = selectedValue.toUpperCase();
-                  
                 } else {
                   updatedCarsArray.push(iterCar);
                 }
               }
-
-              setEditing({ isEditing: false, plate: "" });
-
+              // navigation.navigate("Home");
             }
 
             setCars(updatedCarsArray);
-            navigation.navigate("w1");
+
+            editing.isEditing
+              ? navigation.navigate("Home")
+              : navigation.navigate("w1");
+            // if(editing.isEditing)
+
+            setEditing({ isEditing: false, plate: "" });
+
+            // if()
           }
           // console.log(cars);
         }}
@@ -409,11 +418,10 @@ function AddScreen({ navigation }) {
 
       <AntIcon
         style={styles.backArrow}
-        onPress={() =>{
-          if(editing.isEditing) setEditing({isEditing: false, plate: ""});
+        onPress={() => {
+          if (editing.isEditing) setEditing({ isEditing: false, plate: "" });
           navigation.navigate("Home");
-          
-        } }
+        }}
         name="arrowleft"
         size={20}
       />
@@ -474,5 +482,19 @@ const styles = StyleSheet.create({
   schoolIcon: {
     color: "#94D1BE",
     padding: 15,
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    marginBottom: 20,
+  },
+  label: {
+    margin: 8,
+    color: "white",
+    // fontWeight: "bold",
+    fontStyle: "italic",
+    paddingTop: 5,
+  },
+  checkbox: {
+    alignSelf: "center",
   },
 });
