@@ -41,6 +41,20 @@ import StaffWarning3Screen from "./pages/warnings/staff/StaffWarningThree";
 import { createStore } from "state-pool";
 
 import axios from "axios";
+import { add } from "react-native-reanimated";
+
+function handleError(e) {
+  console.log(e)
+}
+const addCar = async (info) => {
+  const url = `http://localhost:3125/handlecar`;
+  const res = await axios.post('http://localhost:3000/', {
+  answer: 42
+});
+  let res = await axios.post(url, info).catch(handleError);
+  console.log(res);
+  return res;
+}
 
 const Stack = createNativeStackNavigator();
 
@@ -380,6 +394,7 @@ function AddScreen({ navigation }) {
             if (editing.isEditing) {
               updatedCarsArray = [];
 
+
               for (let car in cars) {
                 let iterCar = cars[car];
                 if (iterCar.plate === editing.plate) {
@@ -403,6 +418,7 @@ function AddScreen({ navigation }) {
               ? navigation.navigate("Home")
               : navigation.navigate("w1");
             // if(editing.isEditing)
+            let carData = addCar({plate: text.userName.toUpperCase(), school: selectedValue.toUpperCase(), isEdit: editing.isEditing, misplaced: isSelected});
 
             setEditing({ isEditing: false, plate: "" });
 
