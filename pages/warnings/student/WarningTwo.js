@@ -14,7 +14,7 @@ import React, { useState } from "react";
 
 import IonIcon from "react-native-vector-icons/Ionicons";
 
-export default function Warning2Screen({ navigation }) {
+export default function Warning2Screen({ route, navigation }) {
   return (
     <SafeAreaView style={styles.warningTwo}>
       {/* <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
@@ -47,6 +47,7 @@ export default function Warning2Screen({ navigation }) {
           flexWrap: "wrap",
           width: 280,
           paddingLeft: 18,
+          paddingBottom: 50,
           // top: 200,
         }}
       >
@@ -56,6 +57,20 @@ export default function Warning2Screen({ navigation }) {
         <Text style={{ color: "#ff6666" }}>incorrect spot.</Text> Upon further
         transgressions the severity of the warning will be
         <Text style={{ color: "#ff6666" }}> increased to its maximum.</Text>
+      </Text>
+      <Text
+        style={{
+          color: "black",
+          fontWeight: "bold",
+          fontSize: 14,
+          // position: "absolute",
+          flexWrap: "wrap",
+          width: 280,
+          paddingLeft: 18,
+          // top: 200,
+        }}
+      >
+        Misplaced permit: {route.params.carData.misplacedCount}
       </Text>
       <Pressable
         style={{

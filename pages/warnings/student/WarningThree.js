@@ -14,7 +14,7 @@ import React, { useState } from "react";
 
 import IonIcon from "react-native-vector-icons/Ionicons";
 
-export default function Warning3Screen({ navigation }) {
+export default function Warning3Screen({ route, navigation }) {
   return (
     <SafeAreaView style={styles.warningThree}>
       {/* <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
@@ -47,6 +47,7 @@ export default function Warning3Screen({ navigation }) {
           flexWrap: "wrap",
           width: 280,
           paddingLeft: 18,
+          paddingBottom: 50,
           // top: 200,
         }}
       >
@@ -55,6 +56,20 @@ export default function Warning3Screen({ navigation }) {
         parked in the <Text style={{ color: "white" }}>incorrect spot.</Text>{" "}
         Upon further transgressions action against the{" "}
         <Text style={{ color: "white" }}>car or student</Text> may be required.
+      </Text>
+      <Text
+        style={{
+          color: "black",
+          fontWeight: "bold",
+          fontSize: 14,
+          // position: "absolute",
+          flexWrap: "wrap",
+          width: 280,
+          paddingLeft: 18,
+          // top: 200,
+        }}
+      >
+        Misplaced permit: {route.params.carData.misplacedCount}
       </Text>
       <Pressable
         style={{

@@ -26,6 +26,7 @@ import ComIcon from "react-native-vector-icons/MaterialCommunityIcons";
 // Navigation
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 // Picker
 import { Picker } from "@react-native-picker/picker";
 
@@ -33,10 +34,6 @@ import { Picker } from "@react-native-picker/picker";
 import Warning1Screen from "./pages/warnings/student/WarningOne";
 import Warning2Screen from "./pages/warnings/student/WarningTwo";
 import Warning3Screen from "./pages/warnings/student/WarningThree";
-// staff warnings
-import StaffWarning1Screen from "./pages/warnings/staff/StaffWarningOne";
-import StaffWarning2Screen from "./pages/warnings/staff/StaffWarningTwo";
-import StaffWarning3Screen from "./pages/warnings/staff/StaffWarningThree";
 
 import { createStore } from "state-pool";
 
@@ -44,23 +41,21 @@ import axios from "axios";
 import { add } from "react-native-reanimated";
 
 function handleError(e) {
-  console.log(e)
+  console.log(e);
 }
 const addCar = async (info) => {
-  const url = `http://localhost:3125/handlecar`;
-  const res = await axios.post('http://localhost:3000/', {
-  answer: 42
-});
+  const url = `https://carlotbackend2.herokuapp.com/handlecar`;
   let res = await axios.post(url, info).catch(handleError);
-  console.log(res);
-  return res;
-}
+
+  return res.data;
+};
 
 const Stack = createNativeStackNavigator();
 
 const store = createStore();
 store.setState("GCar", []);
 store.setState("Editing", { isEditing: false, plate: "" });
+store.setState("CarData", { warning: 1, misplacedAmount: "0" });
 
 const CarEntry = ({ cars, navigation }) => {
   const [editing, setEditing] = store.useState("Editing");
@@ -170,21 +165,6 @@ export default function App() {
           component={Warning3Screen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="sw1"
-          component={StaffWarning1Screen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="sw2"
-          component={StaffWarning2Screen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="sw3"
-          component={StaffWarning3Screen}
-          options={{ headerShown: false }}
-        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -235,6 +215,7 @@ function AddScreen({ navigation }) {
   const formatUserName = (textValue) => {
     setText({ userName: textValue.toUpperCase() });
   };
+  navigation = useNavigation();
 
   return (
     <KeyboardAvoidingView
@@ -354,7 +335,7 @@ function AddScreen({ navigation }) {
           paddingLeft: 40,
           paddingRight: 40,
         }}
-        onPress={() => {
+        onPress={async () => {
           // console.log(text.userName);
           if (typeof text.userName === "undefined") {
             alert("Please input a plate number...");
@@ -394,7 +375,6 @@ function AddScreen({ navigation }) {
             if (editing.isEditing) {
               updatedCarsArray = [];
 
-
               for (let car in cars) {
                 let iterCar = cars[car];
                 if (iterCar.plate === editing.plate) {
@@ -414,11 +394,39 @@ function AddScreen({ navigation }) {
 
             setCars(updatedCarsArray);
 
+            // if(editing.isEditing)
+            let truePlate = editing.isEditing
+              ? editing.plate
+              : text.userName.toUpperCase();
+
+            let carData = await addCar({
+              plate: truePlate,
+              school: selectedValue.toUpperCase(),
+              isEdit: editing.isEditing,
+              misplaced: isSelected,
+              editPlate: text.userName.toUpperCase(),
+            });
+
+            let warning = "w1";
+            switch (carData.warningLevel) {
+              case 1:
+                warning = "w1";
+                break;
+              case 2:
+                warning = "w2";
+                break;
+              case 3:
+                warning = "w3";
+                break;
+              default:
+                warning = "w3";
+                break;
+            }
+
             editing.isEditing
               ? navigation.navigate("Home")
-              : navigation.navigate("w1");
-            // if(editing.isEditing)
-            let carData = addCar({plate: text.userName.toUpperCase(), school: selectedValue.toUpperCase(), isEdit: editing.isEditing, misplaced: isSelected});
+              : navigation.navigate(warning, { carData });
+            // console.log(carData);
 
             setEditing({ isEditing: false, plate: "" });
 
